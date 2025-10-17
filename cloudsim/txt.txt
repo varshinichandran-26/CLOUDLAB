@@ -1,0 +1,220 @@
+1.	Download Cloudsim 5.0 from https://github.com/Cloudslab/cloudsim/releases/tag/5.0
+(In lab machines, the cloudsim 5.0 is available in D:/Soft – Don’t download from internet)
+  
+2.	Add common math library
+(Jar files given in canvas – Don’t download)
+https://commons.apache.org/proper/commons-math/download_math.cgi
+
+3) Open Eclipse. Select New > Project > Java Project
+ 
+4) Give a name for the project and Select Java Execution environment
+ 
+Once you click finish, the cloudsim project becomes viewable in your package explorer as shown below
+ 
+Right click on the project name “Cloudsim” – Select “Properties” –java build path- libraries – Add External JARs and select all the JAR files present in the common math folder, you downloaded and unzipped earlier
+
+Click Apply and Apply and Close.
+Once this step is over, Your installation is complete
+
+
+1. Install **Eclipse** or **IntelliJ IDEA** and keep it ready.
+2. Download **CloudSim 3.0.3** from:
+   [CloudSim Releases](https://github.com/Cloudslab/cloudsim/releases/tag/cloudsim-3.0.3)
+
+   * Unzip the folder.
+3. Download **Commons Math Library**:
+   [commons-math3-3.6.1](https://repo.maven.apache.org/maven2/org/apache/commons/commons-math3/3.6.1/)
+
+   * Extract the JAR file.
+4. Open Eclipse.
+
+   * File → New → Java Project
+   * Name it `cloudsim`
+   * Set project location to the CloudSim folder.
+
+---
+
+#### **Step 2: Add External Libraries**
+
+1. Right-click on the project → Build Path → Configure Build Path.
+2. Go to **Libraries → Add External JARs**
+3. Add the following JAR files:
+
+   * `cloudsim-3.0.3.jar` (or similar CloudSim core JARs)
+   * `commons-math3-3.6.1.jar`
+4. Apply and close.
+5. Expand the project → Check `Referenced Libraries` to ensure all JARs are added.
+
+---
+
+#### **Step 3: Test Installation**
+
+* Open a sample example in `org.cloudbus.cloudsim.examples` and run it to ensure CloudSim is working.
+
+---
+
+#### **Step 4: Create Resource Allocation Program**
+
+1. Right-click on the package `org.cloudbus.cloudsim.examples` → New → Class.
+2. Name the class: `ResourceAllocation.java`
+3. Click Finish.
+
+---
+
+#### **Step 5: Add Sample Code**
+
+```java
+package org.cloudbus.cloudsim.examples;
+
+import org.cloudbus.cloudsim.*;
+import org.cloudbus.cloudsim.core.CloudSim;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class ResourceAllocation {
+
+    public static void main(String[] args) {
+
+        try {
+            // Initialize CloudSim
+            int numUser = 1;
+            Calendar calendar = Calendar.getInstance();
+            boolean traceFlag = false;
+            CloudSim.init(numUser, calendar, traceFlag);
+
+            // Create Datacenter
+            Datacenter datacenter0 = createDatacenter("Datacenter_0");
+
+            // Create Broker
+            DatacenterBroker broker = createBroker();
+            int brokerId = broker.getId();
+
+            // Create VMs
+            List<Vm> vmList = new ArrayList<>();
+            vmList.add(new Vm(0, brokerId, 1000, 1, 512, 1000, 10000, "Xen", new CloudletSchedulerTimeShared()));
+            vmList.add(new Vm(1, brokerId, 2000, 2, 1024, 2000, 20000, "Xen", new CloudletSchedulerTimeShared()));
+
+            broker.submitVmList(vmList);
+
+            // Create Cloudlets
+            List<Cloudlet> cloudletList = new ArrayList<>();
+            int length = 40000;
+            int fileSize = 300;
+            int outputSize = 300;
+            UtilizationModelFull utilizationModel = new UtilizationModelFull();
+
+            cloudletList.add(new Cloudlet(0, length, 1, fileSize, outputSize, utilizationModel, utilizationModel, utilizationModel));
+            cloudletList.add(new Cloudlet(1, length, 2, fileSize, outputSize, utilizationModel, utilizationModel, utilizationModel));
+
+            for (Cloudlet cloudlet : cloudletList) {
+                cloudlet.setUserId(brokerId);
+            }
+
+            broker.submitCloudletList(cloudletList);
+
+            // Start simulation
+            CloudSim.startSimulation();
+            List<Cloudlet> newList = broker.getCloudletReceivedList();
+            CloudSim.stopSimulation();
+
+            // Print results
+            System.out.println("========== Cloudlet Execution Results ==========");
+            for (Cloudlet cloudlet : newList) {
+                System.out.println("Cloudlet ID: " + cloudlet.getCloudletId() +
+                        " | Status: " + cloudlet.getStatus() +
+                        " | VM ID: " + cloudlet.getVmId() +
+                        " | Datacenter ID: " + cloudlet.getResourceId());
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static Datacenter createDatacenter(String name) {
+
+        List<Host> hostList = new ArrayList<>();
+        int mips = 1000;
+        int ram = 2048; // host memory (MB)
+        long storage = 1000000; // host storage
+        int bw = 10000;
+
+        List<Pe> peList = new ArrayList<>();
+        peList.add(new Pe(0, new PeProvisionerSimple(mips)));
+
+        hostList.add(new Host(0, new RamProvisionerSimple(ram), new BwProvisionerSimple(bw),
+                storage, peList, new VmSchedulerTimeShared(peList)));
+
+        String arch = "x86";
+        String os = "Linux";
+        String vmm = "Xen";
+
+        return new Datacenter(name, new DatacenterCharacteristics(arch, os, vmm, hostList,
+                10.0, 3.0, 0.05, 0.1, "TimeShared"), new VmAllocationPolicySimple(hostList), new ArrayList<>());
+    }
+
+    private static DatacenterBroker createBroker() throws Exception {
+        return new DatacenterBroker("Broker");
+    }
+}
+```
+
+---
+
+### **Step 6: Compile and Run**
+
+1. Right-click → Run As → Java Application.
+2. Check the console for **Cloudlet execution results**:
+
+```
+Cloudlet ID: 0 | Status: SUCCESS | VM ID: 0 | Datacenter ID: 0
+Cloudlet ID: 1 | Status: SUCCESS | VM ID: 1 | Datacenter ID: 0
+```
+
+---
+
+### **Explanation**
+
+* **Datacenter**: Simulates physical hosts with resources.
+* **Host**: Physical machine inside datacenter.
+* **VMs**: Virtual Machines created by broker.
+* **Cloudlets**: Tasks/jobs submitted to VMs.
+* **VmAllocationPolicySimple**: Allocates VMs to hosts in FCFS manner.
+* **CloudletSchedulerTimeShared**: Scheduler for running multiple cloudlets concurrently on VM.
+
+---
+
+If you want, I can also **draw a neat diagram showing the flow of Datacenter → Host → VM → Cloudlet** for your lab report.
+
+Do you want me to do that?
+
+
+ 
+
+ 
+
+ 
+ 
+
+
+
+Click Apply and Apply and Close
+
+ 
+
+ 
+
+Once this step is over, Your installation is complete
+
+Under the examples package, you may find example simulation codes
+ 
+
+You may study them. 
+
+
+
+
+
+
+

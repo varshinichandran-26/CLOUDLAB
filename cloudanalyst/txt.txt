@@ -1,0 +1,15 @@
+Download CloudAnalyst for netbeans
+https://sourceforge.net/projects/cloudanalystnetbeans/
+Download Netbeans – from under Installers and Packages – windows x64 exe
+Click on the Installer downloaded to start Netbeans installation
+Click Next – Next and complete installation
+Open Netbeans
+Netbeans Homepage
+Click ‘Open Project’
+Meanwhile, extract downloaded Cloud Analyst Zip folder and select the same
+Simply run the project by clicking green colour play button in the top
+Ignore below error
+You will end up at this screen
+Configure simulation button
+Once the simulation setup is done, you may click Done
+Then Click “Run Simulation”

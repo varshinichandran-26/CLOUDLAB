@@ -1,0 +1,15 @@
+Firebase console -> create new project ->Add app -> select </> (web app) -> give name to this web app -> copy the firebase config -> then click done
+Go to build -> authentication -> enable gmail /password 
+
+Build -> firebase store -> get started -> select asia south 1 mumbai -> done
+Firebase services for authentication, DB
+
+Npm install -g firebase-tools
+Firebase login
+Firebase projects:create mytodo
+
+Firebase init
+->hosting->enter->public directory .enter->existing project ->mytodo->single page-yes-> overwrite-no
+
+Firebase deploy
+

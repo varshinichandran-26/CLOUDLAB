@@ -1,0 +1,4 @@
+To run: npm install express express-openid-connect dotenv
+Node app.js
+
+auth0->create app->regular app->java->settings->copy domain ,client id,client secret

@@ -1,0 +1,71 @@
+sudo apt update
+
+sudo apt-get update -y
+
+sudo apt-get upgrade -y
+
+
+sudo apt-get install openjdk-17-jdk -y
+
+
+java -version
+
+
+wget -c https://downloads.apache.org/spark/spark-4.0.1/spark-4.0.1-bin-hadoop3.tgz
+
+tar xvf spark-4.0.1-bin-hadoop3.tgz
+
+sudo mv spark-4.0.1-bin-hadoop3 /usr/local/spark
+
+go to root user (sudo -i)
+go to( cd /usr/local/spark) 
+
+Nano ~/.bashrc
+export SPARK_HOME=/usr/local/spark
+export PATH=$SPARK_HOME/bin:$PATH
+export PYSPARK_PYTHON=python3
+or
+
+echo 'export SPARK_HOME=/usr/local/spark' >> ~/.bashrc
+echo 'export PATH=$SPARK_HOME/bin:$PATH' >> ~/.bashrc
+echo 'export PYSPARK_PYTHON=python3' >> ~/.bashrc
+
+source ~/.bashrc
+
+pyspark 
+
+type "exit" it goes to root dir
+
+
+nano input.txt
+
+In as name to here them deny wise this. As rapid woody my he me which. Men but they fail shew just wish next put
+
+nano wordcount.py 
+
+from pyspark import SparkContext
+
+# Initialize Spark Context
+sc = SparkContext("local", "WordCount")
+
+# Read input file
+text_file = sc.textFile("input.txt")
+
+# Word count logic
+counts = (text_file
+          .flatMap(lambda line: line.split(" "))
+          .map(lambda word: (word, 1))
+          .reduceByKey(lambda a, b: a + b))
+
+# Save output to file
+counts.saveAsTextFile("output")
+
+print("Word count completed. Check 'output' folder.")
+sc.stop()
+
+
+spark-submit wordcount.py
+
+ls output
+cat output/part-00000
+

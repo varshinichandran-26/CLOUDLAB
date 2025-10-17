@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Random Dog App</title>
+  
+</head>
+<body>
+  <h2>🐶 Random Dog Image Generator</h2>
+  <button onclick="getDog()">Get Dog</button>
+  <div id="result"></div>
+
+  <script>
+    function getDog() {
+      fetch("https://dog.ceo/api/breeds/image/random")
+        .then(res => res.json())
+        .then(data => {
+          document.getElementById("result").innerHTML =
+            "<img src='" + data.message + "' alt='Dog Image'>";
+        });
+    }
+  </script>
+</body>
+</html>

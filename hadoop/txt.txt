@@ -1,0 +1,287 @@
+Sure 😄 — here’s a **clean, step-by-step procedure** for installing Hadoop on Ubuntu using a pre-built script and running a WordCount MapReduce job.
+
+---
+
+## **Procedure: Install Hadoop and Run WordCount**
+
+---
+
+### **Step 1: Install Java**
+
+Hadoop requires Java. Install OpenJDK 8:
+
+```bash
+sudo apt update
+sudo apt install openjdk-8-jdk -y
+java -version
+```
+
+---
+
+### **Step 2: Install Hadoop using Pre-Built Script**
+
+This automates downloading, configuring, and starting Hadoop.
+
+```bash
+sudo apt update && sudo apt install wget -y
+wget https://raw.githubusercontent.com/aryanur1/Hadoop-Ubuntu-Installer/main/hadoop-installer.sh
+chmod +x hadoop-installer.sh
+./hadoop-installer.sh
+```
+
+✅ What this script does:
+
+* Installs Java (if missing)
+* Downloads Hadoop
+* Configures environment variables
+* Sets up single-node SSH
+* Formats HDFS and starts Hadoop services
+
+---
+
+### **Step 3: Start Hadoop Services**
+
+After installation, run:
+
+```bash
+start-dfs.sh
+start-yarn.sh
+jps
+```
+
+You should see processes like:
+
+```
+NameNode
+DataNode
+ResourceManager
+NodeManager
+SecondaryNameNode
+```
+
+---
+
+### **Step 4: Create WordCount Script**
+
+1. Create a script file:
+
+```bash
+nano run-wordcount.sh
+```
+
+2. Paste the following content:
+
+```bash
+#!/bin/bash
+
+# WordCount Demo Script for Hadoop
+
+echo "🔹 Checking Hadoop Services..."
+jps
+
+echo "🔹 Creating HDFS input directory..."
+hdfs dfs -mkdir -p /user/hadoop/input
+
+echo "🔹 Adding sample text file to HDFS..."
+echo "Hello Hadoop Hello World. Hadoop is awesome. Big Data with Hadoop!" > input.txt
+hdfs dfs -put -f input.txt /user/hadoop/input/
+
+echo "🔹 Removing old output directory (if exists)..."
+hdfs dfs -rm -r -f /user/hadoop/output
+
+echo "🔹 Running WordCount MapReduce example..."
+hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-*.jar wordcount /user/hadoop/input /user/hadoop/output
+
+echo "🔹 Job completed. Output files:"
+hdfs dfs -ls /user/hadoop/output
+
+echo "🔹 Displaying WordCount result:"
+hdfs dfs -cat /user/hadoop/output/part-r-00000
+
+echo "✅ WordCount job finished successfully!"
+```
+
+3. Save and exit (`Ctrl + O`, `Enter`, `Ctrl + X`).
+
+---
+
+### **Step 5: Make Script Executable**
+
+```bash
+chmod +x run-wordcount.sh
+```
+
+---
+
+### **Step 6: Run WordCount Job**
+
+```bash
+./run-wordcount.sh
+```
+
+---
+
+### **Step 7: Expected Output**
+
+* Hadoop services running (`jps` output)
+* HDFS input directory created
+* WordCount MapReduce job completes successfully
+* Output in HDFS `/user/hadoop/output`
+* Word counts displayed in terminal, e.g.:
+
+```
+Big 1
+Data 1
+Hadoop 3
+Hello 2
+World. 1
+awesome. 1
+is 1
+with 1
+```
+
+---
+
+### ✅ **Notes**
+
+* This uses **single-node Hadoop** setup (pseudo-distributed mode).
+* You can replace `input.txt` with any text file for other MapReduce experiments.
+* No need to manually edit XML configuration files — the installer handles it.
+
+---
+
+If you want, I can also give a **step-by-step guide to run this same WordCount using PySpark on this Hadoop setup**, which is easier for Python users.
+
+Do you want me to do that?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Ah! You want to use **Hadoop** itself (not PySpark) for WordCount. You can still do it **easily** using the pre-built Hadoop MapReduce examples that come with Hadoop — no need to write Java code from scratch. Here’s how:
+
+---
+
+## **Procedure: Run WordCount on Hadoop (Java MapReduce)**
+
+---
+
+### **Step 1: Start Hadoop Services**
+
+Make sure Hadoop is running in pseudo-distributed mode:
+
+```bash
+start-dfs.sh
+start-yarn.sh
+jps
+```
+
+Expected `jps` output:
+
+```
+NameNode
+DataNode
+ResourceManager
+NodeManager
+SecondaryNameNode
+```
+
+---
+
+### **Step 2: Create Input File in HDFS**
+
+```bash
+hdfs dfs -mkdir -p /user/hadoop/input
+echo "Hello Hadoop Hello World. Hadoop is awesome. Big Data with Hadoop!" > input.txt
+hdfs dfs -put -f input.txt /user/hadoop/input/
+```
+
+---
+
+### **Step 3: Remove Old Output Directory (if exists)**
+
+```bash
+hdfs dfs -rm -r -f /user/hadoop/output
+```
+
+---
+
+### **Step 4: Run Built-in WordCount**
+
+Hadoop comes with a **MapReduce examples jar**, so you don’t need to write Java code:
+
+```bash
+hadoop jar $HADOOP_HOME/share/hadoop/mapreduce/hadoop-mapreduce-examples-*.jar wordcount /user/hadoop/input /user/hadoop/output
+```
+
+---
+
+### **Step 5: View Output**
+
+```bash
+hdfs dfs -ls /user/hadoop/output
+hdfs dfs -cat /user/hadoop/output/part-r-00000
+```
+
+You should see something like:
+
+```
+Big 1
+Data 1
+Hadoop 3
+Hello 2
+World. 1
+awesome. 1
+is 1
+with 1
+```
+
+---
+
+### ✅ **Notes**
+
+* No Java coding required — Hadoop’s example jar handles MapReduce for you.
+* Works on **single-node pseudo-distributed Hadoop setup**.
+* You can replace `input.txt` with any text file for other experiments.
+* If you want, I can also give a **bash script** that does all of this in **one go**, including creating input and printing output.
+
+Do you want me to do that?

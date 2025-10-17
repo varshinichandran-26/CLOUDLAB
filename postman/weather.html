@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>🌦 Simple Weather App (No API Key)</title>
+</head>
+<body>
+  <h2>🌍 Get Current Weather</h2>
+
+  <input type="text" id="city" placeholder="Enter city name">
+  <button onclick="getWeather()">Get Weather</button>
+
+  <div id="result"></div>
+
+  <script>
+    function getWeather() {
+      const city = document.getElementById("city").value;
+      const url = `https://wttr.in/${city}?format=j1`;
+
+      fetch(url)
+        .then(res => res.json())
+        .then(data => {
+          const area = data.nearest_area[0].areaName[0].value;
+          const temp = data.current_condition[0].temp_C;
+          const desc = data.current_condition[0].weatherDesc[0].value;
+          const humidity = data.current_condition[0].humidity;
+
+          document.getElementById("result").innerHTML = `
+            <h3>🌤 Weather in ${area}</h3>
+            <p>🌡 Temperature: ${temp}°C</p>
+            <p>💧 Humidity: ${humidity}%</p>
+            <p>☁ Condition: ${desc}</p>
+          `;
+        })
+        .catch(() => {
+          document.getElementById("result").innerHTML = "⚠ Unable to fetch weather!";
+        });
+    }
+  </script>
+</body>
+</html>

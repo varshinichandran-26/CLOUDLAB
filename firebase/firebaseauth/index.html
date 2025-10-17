@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Simple Firebase Todo App</title>
+</head>
+<body>
+  <h2> Simple Firebase Todo App</h2>
+
+  <input id="email" placeholder="Email">
+  <input id="password" type="password" placeholder="Password">
+  <button onclick="register()">Register</button>
+  <button onclick="login()">Login</button>
+
+  <hr>
+
+  <input id="task" placeholder="Enter task">
+  <button onclick="addTodo()">Add</button>
+
+  <ul id="list"></ul>
+
+  <!-- ✅ Just include these Firebase scripts (no imports needed) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+  <script>
+    // ✅ Replace with your Firebase config
+const firebaseConfig = {
+  apiKey: "AIzaSyB2gu1papVDJv6lXRbmdI6duzze8Z4OL8E",
+  authDomain: "mytodo-varshini123.firebaseapp.com",
+  projectId: "mytodo-varshini123",
+  storageBucket: "mytodo-varshini123.firebasestorage.app",
+  messagingSenderId: "533045749073",
+  appId: "1:533045749073:web:3121eb856e7bf324a89f70"
+};
+
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    var auth = firebase.auth();
+    var db = firebase.firestore();
+
+    // Register user
+    function register() {
+      var email = document.getElementById("email").value;
+      var password = document.getElementById("password").value;
+      auth.createUserWithEmailAndPassword(email, password)
+        .then(() => alert("User Registered!"))
+        .catch(e => alert(e.message));
+    }
+
+    // Login user
+    function login() {
+      var email = document.getElementById("email").value;
+      var password = document.getElementById("password").value;
+      auth.signInWithEmailAndPassword(email, password)
+        .then(() => {
+          alert("Login Successful!");
+          loadTodos();
+        })
+        .catch(e => alert(e.message));
+    }
+
+    // Add todo to Firestore
+    function addTodo() {
+      var task = document.getElementById("task").value;
+      db.collection("todos").add({ text: task })
+        .then(() => {
+          alert("Todo added!");
+          document.getElementById("task").value = "";
+          loadTodos();
+        });
+    }
+
+    // Load todos
+    function loadTodos() {
+      var list = document.getElementById("list");
+      list.innerHTML = "";
+      db.collection("todos").get().then(snapshot => {
+        snapshot.forEach(doc => {
+          var li = document.createElement("li");
+          li.textContent = doc.data().text;
+          list.appendChild(li);
+        });
+      });
+    }
+  </script>
+</body>
+</html>
+
+
+

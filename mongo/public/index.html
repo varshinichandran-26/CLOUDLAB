@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>📚 Simple Book Store</title>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: Arial; text-align: center; margin-top: 40px; }
+    input { margin: 5px; padding: 5px; }
+    button { margin: 5px; padding: 5px 10px; }
+    table { margin: 20px auto; border-collapse: collapse; width: 60%; }
+    td, th { border: 1px solid #ccc; padding: 8px; }
+  </style>
+</head>
+<body>
+  <h2>📘 Book Store</h2>
+
+  <input id="title" placeholder="Title">
+  <input id="author" placeholder="Author">
+  <input id="year" placeholder="Year">
+  <button onclick="addBook()">Add</button>
+  <button onclick="loadBooks()">Load</button>
+
+  <table id="books">
+    <tr><th>Title</th><th>Author</th><th>Year</th><th>Action</th></tr>
+  </table>
+
+  <script>
+    async function addBook() {
+      const title = document.getElementById('title').value;
+      const author = document.getElementById('author').value;
+      const year = document.getElementById('year').value;
+      await fetch('/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, author, year })
+      });
+      loadBooks();
+    }
+
+    async function loadBooks() {
+      const res = await fetch('/list');
+      const data = await res.json();
+      const table = document.getElementById('books');
+      table.innerHTML = '<tr><th>Title</th><th>Author</th><th>Year</th><th>Action</th></tr>';
+      data.forEach(book => {
+        table.innerHTML += `
+          <tr>
+            <td>${book.title}</td>
+            <td>${book.author}</td>
+            <td>${book.year}</td>
+            <td><button onclick="deleteBook('${book._id}')">Delete</button></td>
+          </tr>`;
+      });
+    }
+
+    async function deleteBook(id) {
+      await fetch('/delete/' + id, { method: 'DELETE' });
+      loadBooks();
+    }
+
+    loadBooks();
+  </script>
+</body>
+</html>

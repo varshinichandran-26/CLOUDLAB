@@ -1,0 +1,78 @@
+MPI:
+
+sudo apt install python3
+sudo apt install -y -qq mpich
+sudo apt install python3-pip
+pip install mpi4py
+gedit mpi_example.py
+Code:
+from mpi4py import MPI
+comm=MPI.COMM_WORLD
+rank=comm.Get_rank()
+size=comm.Get_size()
+print(f” hello from the process of {rank} of {size}”)
+
+To run: mpirun -np 4 python3 mpi_example.py
+
+
+Open mpi:
+
+#include <stdio.h>
+#include <omp.h>
+
+int main() {
+    int n = 8;
+    int numbers[] = {1,2,3,4,5,6,7,8};
+    int sum = 0;
+
+    #pragma omp parallel for reduction(+:sum)
+    for(int i=0; i<n; i++){
+        sum += numbers[i];
+    }
+
+    printf("Total sum = %d\n", sum);
+    return 0;
+}
+
+#include <stdio.h>
+#include <omp.h>
+
+int fib(int n) {
+    if (n <= 1) return n;
+    return fib(n - 1) + fib(n - 2);
+}
+
+int main() {
+    int n, sum = 0;
+    printf("Enter n: ");
+    scanf("%d", &n);
+
+    #pragma omp parallel for reduction(+:sum)
+    for (int i = 0; i < n; i++) {
+        sum += fib(i);
+    }
+
+    printf("Sum of first %d Fibonacci numbers: %d\n", n, sum);
+    return 0;
+}
+
+
+#include <stdio.h>
+#include <omp.h>
+
+int main() {
+    int n;
+    long long fact = 1;
+
+    printf("Enter a number: ");
+    scanf("%d", &n);
+
+    #pragma omp parallel for reduction(*:fact)
+    for (int i = 1; i <= n; i++) {
+        fact *= i;
+    }
+
+    printf("Factorial of %d = %lld\n", n, fact);
+    return 0;
+}
+
